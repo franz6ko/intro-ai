@@ -1,39 +1,70 @@
 import numpy as np
 
+## TODO: pasar a notebook
+
 # Ejercicio 1
-""" p = 2 # 1,2,3,4,5
+p = "inf" # 0,1,2,3,4,5,...,"inf"
 
 x = np.random.random((3,3))
 print(x)
 
 print("Ejercicio 1")
-p_norms = np.sum(np.abs(x)**p, axis=1)**(1/p)
+
+if p == 0:
+    p_norms = np.sum(x > 0)
+elif p == "inf":
+    p_norms = np.max(x, axis=1)
+else:
+    p_norms = np.sum(np.abs(x)**p, axis=1)**(1/p)
+
 print(p_norms)
-# usar mascaras para la norma 0
-# usar np.max para la norma infinito """
+
 
 # Ejercicio 2
 
-""" print("Ejercicio 2")
+print("Ejercicio 2")
 indexes = np.argsort(p_norms * -1) # El -1 hace que los ordene de mayor a menor
 print(indexes)
-print(x[indexes]) """
+print(x[indexes])
 
 # Ejercicio 3
 
-# masking, crear clases, hacer que todo sea vectorizado
+class IdxManager:
+    def __init__(self, ids):
+        self.idx2id = ids
+        self.id2idx = []
 
-""" class IdxManager:
-    def __init__(self, name):
-        self.users_id = [15, 12, 14, 10, 1, 2, 1]
-    def get_users_id(self):
-        # TODO
-    def get_users_idx(self):
-        # TODO """
+        # remove duplicated values in ids
+        indexes = np.unique(ids, return_index=True)[1]
+        ids = np.array([ids[index] for index in sorted(indexes)])
 
-# Ejercicio 4 (hacer)
+        self.id2idx = np.full((np.max(ids) + 1),-1)
+        self.id2idx[ids] = np.arange(ids.size)
 
-""" truth       = np.array([1,1,0,1,1,1,0,0,0,1])
+    def get_users_idx(self, user_id):
+        try:
+            return self.id2idx[user_id]
+        except IndexError:
+            return -1
+
+    def get_users_id(self, idx):
+        try:
+            return self.idx2id[idx]
+        except IndexError:
+            return -1
+
+idxManager = IdxManager([15, 12, 14, 10, 1, 2, 1])
+
+print(idxManager.get_users_idx(15))
+print(idxManager.get_users_idx(12))
+print(idxManager.get_users_idx(3))
+
+print(idxManager.get_users_id(0))
+print(idxManager.get_users_id(4))
+
+# Ejercicio 4
+
+truth       = np.array([1,1,0,1,1,1,0,0,0,1])
 prediction  = np.array([1,1,1,1,0,0,1,1,0,0])
 
 TP = np.sum(truth & prediction)
@@ -47,11 +78,9 @@ accuracy = (TP + TN) / (TP + TN + FP + FN)
 
 print("Precision: " + str(precision))
 print("Recall: " + str(recall))
-print("Accuracy: " + str(accuracy)) """
+print("Accuracy: " + str(accuracy))
 
 # Ejercicio 5
-
-# normas y masking
 
 T = True
 F = False
@@ -72,7 +101,7 @@ for i in range(4):
 
 print("Average query precision: " + str(q_precision.mean()))
 
-# Ejercicios 6, 7 y 8 para la clase que viene 
+# Ejercicios 6, 7 y 8 (los hacemos en la clase que viene )
 
 # Ejercicio 9
 
@@ -80,4 +109,4 @@ print("Average query precision: " + str(q_precision.mean()))
 
 # Ejercicio 10 (hacer)
 
-# No usar panda, usar numpy y pickle, cargar SCV usar singleton
+# No usar panda, usar numpy y pickle, cargar CSV usar singleton
