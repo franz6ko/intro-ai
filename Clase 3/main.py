@@ -3,6 +3,7 @@ from LinearRegression import LinearRegression
 from LinearRegressionB import LinearRegressionB
 from MSE import MSE
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Import dataset and split in training and test sets
 ds = Dataset('data/income')
@@ -36,4 +37,5 @@ plt.plot(test_x, lrb_results, label='Linear Regression B')
 plt.legend()
 plt.show()
 
+var_mean = np.sum()
 
