@@ -1,15 +1,16 @@
 import numpy as np
-from sklearn.preprocessing import PolynomialFeatures
-# see: https://www.geeksforgeeks.org/ml-mini-batch-gradient-descent-with-python/
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+# see also: https://www.geeksforgeeks.org/ml-mini-batch-gradient-descent-with-python/
 
 
 class MiniBatchGradientDescent:
 
-    def __init__(self, alpha, n_epochs, n_batches, poly=None):
+    def __init__(self, alpha, n_epochs, n_batches, poly=None, lbd=0):
         self.alpha = alpha
         self.n_epochs = n_epochs
         self.model = None
         self.n_batches = n_batches
+        self.lbd = lbd
 
         if poly is not None:
             self.poly = PolynomialFeatures(poly)
@@ -20,6 +21,7 @@ class MiniBatchGradientDescent:
 
         if self.poly is not None:
             x = self.poly.fit_transform(x.reshape(-1, 1))
+            x = StandardScaler(with_std=True).fit_transform(x)
 
         if x.ndim == 1:
             x = x.reshape(-1, 1)
@@ -40,7 +42,8 @@ class MiniBatchGradientDescent:
             for i in range(self.n_batches):
                 bx = x_sh[i * batch_size:(i + 1) * batch_size]
                 by = y_sh[i * batch_size:(i + 1) * batch_size]
-                w = w - self.alpha * (-2 / n_samples) * np.sum((by - bx @ w)[:, np.newaxis] * bx, axis=0)
+                reg_factor = 1 - 2 * self.lbd * self.alpha
+                w = reg_factor * w - self.alpha * (-2 / n_samples) * np.sum((by - bx @ w)[:, np.newaxis] * bx, axis=0)
 
         self.model = w
 
@@ -48,6 +51,7 @@ class MiniBatchGradientDescent:
 
         if self.poly is not None:
             x = self.poly.fit_transform(x.reshape(-1, 1))
+            x = StandardScaler(with_std=True).fit_transform(x)
 
         if x.ndim == 1:
             x = x.reshape(-1, 1)

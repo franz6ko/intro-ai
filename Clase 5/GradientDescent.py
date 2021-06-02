@@ -1,13 +1,14 @@
 import numpy as np
-from sklearn.preprocessing import PolynomialFeatures
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 
 
 class GradientDescent:
 
-    def __init__(self, alpha, n_epochs, poly=None):
+    def __init__(self, alpha, n_epochs, poly=None, lbd=0):
         self.alpha = alpha
         self.n_epochs = n_epochs
         self.model = None
+        self.lbd = lbd
 
         if poly is not None:
             self.poly = PolynomialFeatures(poly)
@@ -18,6 +19,7 @@ class GradientDescent:
 
         if self.poly is not None:
             x = self.poly.fit_transform(x.reshape(-1, 1))
+            x = StandardScaler(with_std=True).fit_transform(x)
 
         if x.ndim == 1:
             x = x.reshape(-1, 1)
@@ -40,7 +42,8 @@ class GradientDescent:
                 o[i, :] = e[i] * x[i, :]
             g = -2 * np.sum(o, axis=0) / n_samples
             # 5 - Correction
-            w = w - self.alpha * g
+            reg_factor = 1 - 2 * self.lbd * self.alpha
+            w = reg_factor * w - self.alpha * g
 
             # 2-5 condensed version
             # for epoch in range(n_epochs):
@@ -52,6 +55,7 @@ class GradientDescent:
 
         if self.poly is not None:
             x = self.poly.fit_transform(x.reshape(-1, 1))
+            x = StandardScaler(with_std=True).fit_transform(x)
 
         if x.ndim == 1:
             x = x.reshape(-1, 1)
