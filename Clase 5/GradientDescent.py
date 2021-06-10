@@ -28,7 +28,7 @@ class GradientDescent:
         n_features = x.shape[1]
 
         # 1 - Random w initialization
-        w = np.random.random(n_features)
+        w = np.random.random(n_features)*-100
         np.seterr(all='warn')
 
         for epoch in range(self.n_epochs):

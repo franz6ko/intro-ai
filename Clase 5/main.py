@@ -55,6 +55,9 @@ for i in range(limit_grade + 1):
     mse[2, i] = mse_eval(y_train, res[2, i, :])
     mse[3, i] = mse_eval(y_train, res[3, i, :])
 
+    print(pr.model)
+    print(gr.model)
+
 # Bias correction
 bias = (res - y_train).mean(axis=2)
 res -= bias[:, :, np.newaxis]
